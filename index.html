@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 힌트 텍스트 */
+    .hint {
+      position: absolute;
+      bottom: 30px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      animation: pulse 2s ease-in-out infinite;
+      transition: opacity 0.5s;
+    }
+
+    .hint.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* 카드 컨테이너 */
+    .card-scene {
+      perspective: 1200px;
+      width: 340px;
+      height: 460px;
+      cursor: pointer;
+    }
+
+    @media (min-width: 600px) {
+      .card-scene {
+        width: 420px;
+        height: 560px;
+      }
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card.is-flipped {
+      transform: rotateY(-180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 카드 앞면 */
+    .card-front {
+      background: linear-gradient(145deg, #ff6b6b, #ee5a24, #f0932b);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .card-front .envelope-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .card-front h1 {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .card-front p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    /* 리본 장식 */
+    .ribbon {
+      position: absolute;
+      top: -5px;
+      right: 20px;
+      width: 40px;
+      height: 80px;
+      background: #ffd32a;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .ribbon::before {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      border-left: 20px solid #ffd32a;
+      border-right: 20px solid #ffd32a;
+      border-bottom: 15px solid transparent;
+    }
+
+    /* 카드 뒷면 (내용) */
+    .card-back {
+      background: linear-gradient(145deg, #fff9e6, #ffffff, #fff0f5);
+      transform: rotateY(180deg);
+      padding: 40px 30px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .card-back .deco-top,
+    .card-back .deco-bottom {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      letter-spacing: 8px;
+    }
+
+    .deco-top { top: 10px; }
+    .deco-bottom { bottom: 10px; }
+
+    .card-back .cake-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: wiggle 1s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+
+    .card.is-flipped .card-back .cake-icon {
+      animation-play-state: running;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+    }
+
+    .card-back h2 {
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #ee5a24, #f0932b, #6c5ce7, #a29bfe);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 3s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .card-back .message {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .card-back .name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #6c5ce7;
+    }
+
+    .card-back .from {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    /* 별 장식 (앞면) */
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      font-size: 14px;
+      animation: twinkle 2s ease-in-out infinite;
+    }
+
+    .star:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+    .star:nth-child(2) { top: 15%; right: 15%; animation-delay: 0.5s; }
+    .star:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 1s; }
+    .star:nth-child(4) { bottom: 15%; right: 10%; animation-delay: 1.5s; }
+    .star:nth-child(5) { top: 50%; left: 5%; animation-delay: 0.3s; }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* 색종이(Confetti) */
+    canvas#confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* 음악 버튼 */
+    .music-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255,255,255,0.35);
+    }
+
+    .music-btn.playing {
+      animation: musicPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes musicPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+    }
+
+    /* 배경 떠다니는 원 */
+    .bg-circles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .bg-circle:nth-child(1) {
+      width: 200px; height: 200px; background: #ffd32a;
+      top: 10%; left: -5%; animation-delay: 0s;
+    }
+    .bg-circle:nth-child(2) {
+      width: 150px; height: 150px; background: #ff6b6b;
+      top: 60%; right: -3%; animation-delay: 2s;
+    }
+    .bg-circle:nth-child(3) {
+      width: 100px; height: 100px; background: #a29bfe;
+      bottom: 10%; left: 20%; animation-delay: 4s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(10deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 배경 장식 -->
+  <div class="bg-circles">
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+  </div>
+
+  <!-- 음악 버튼 -->
+  <button class="music-btn" id="musicBtn" title="음악 재생/정지">🔇</button>
+
+  <!-- 카드 -->
+  <div class="card-scene" id="cardScene">
+    <div class="card" id="card">
+      <!-- 앞면 -->
+      <div class="card-face card-front">
+        <div class="ribbon"></div>
+        <div class="stars">
+          <span class="star">✦</span>
+          <span class="star">✦</span>
+          <span class="star">✦</span>
+          <span class="star">✦</span>
+          <span class="star">✦</span>
+        </div>
+        <div class="envelope-icon">🎁</div>
+        <h1>특별한 선물이<br>도착했어요!</h1>
+        <p>카드를 클릭해서 열어보세요</p>
+      </div>
+
+      <!-- 뒷면 (내용) -->
+      <div class="card-face card-back">
+        <div class="deco-top">🎉✨🎊✨🎉</div>
+        <div class="cake-icon">🎂</div>
+        <h2>Happy Birthday!</h2>
+        <p class="message">
+          To. 인길<br>
+          태어나줘서 고마워요!<br>
+          올 한 해도 건강하고<br>
+          작년보다 행복한 일들이 가득하길<br>
+          진심으로 바랍니다 🥰<br>
+          앞으로의 인생을 항상 응원합니다!<br>          
+          긍정긍정^^
+        </p>
+        <p class="name">생일 축하해요! 🎈</p>
+        <p class="from">with love Jang❤️</p><br><br>
+        <div class="deco-bottom">🎉✨🎊✨🎉</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint" id="hint">👆 카드를 클릭해보세요!</p>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti"></canvas>
+
+  <script>
+    // --- 카드 플립 ---
+    const card = document.getElementById('card');
+    const cardScene = document.getElementById('cardScene');
+    const hint = document.getElementById('hint');
+    let flipped = false;
+
+    cardScene.addEventListener('click', () => {
+      flipped = !flipped;
+      card.classList.toggle('is-flipped', flipped);
+      if (flipped) {
+        hint.classList.add('hidden');
+        setTimeout(launchConfetti, 600);
+      }
+    });
+
+    // --- Confetti 효과 ---
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const confettiColors = [
+      '#ff6b6b', '#ffd32a', '#6c5ce7', '#a29bfe',
+      '#fd79a8', '#00cec9', '#fab1a0', '#55efc4',
+      '#ff9ff3', '#f368e0', '#ff9f43', '#ee5a24'
+    ];
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = -20 - Math.random() * canvas.height * 0.5;
+        this.size = Math.random() * 8 + 4;
+        this.speedY = Math.random() * 3 + 2;
+        this.speedX = (Math.random() - 0.5) * 4;
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = (Math.random() - 0.5) * 10;
+        this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        this.shape = Math.random() > 0.5 ? 'rect' : 'circle';
+        this.opacity = 1;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.rotation += this.rotationSpeed;
+        this.speedX += (Math.random() - 0.5) * 0.2;
+
+        if (this.y > canvas.height + 20) {
+          this.opacity -= 0.02;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.fillStyle = this.color;
+
+        if (this.shape === 'rect') {
+          ctx.fillRect(-this.size / 2, -this.size / 4, this.size, this.size / 2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+    }
+
+    function launchConfetti() {
+      particles = [];
+      for (let i = 0; i < 150; i++) {
+        particles.push(new Particle());
+      }
+      if (!animationId) animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles = particles.filter(p => p.opacity > 0);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      if (particles.length > 0) {
+        animationId = requestAnimationFrame(animateConfetti);
+      } else {
+        animationId = null;
+      }
+    }
+
+    // --- 배경음악 (Web Audio API로 생일 축하 멜로디 생성) ---
+    const musicBtn = document.getElementById('musicBtn');
+    let audioCtx = null;
+    let isPlaying = false;
+    let melodyTimeout = [];
+
+    const birthdayNotes = [
+      // Happy Birthday melody (frequency, duration, delay)
+      [262, 0.3, 0],     // C
+      [262, 0.3, 0.35],  // C
+      [294, 0.6, 0.7],   // D
+      [262, 0.6, 1.35],  // C
+      [349, 0.6, 2.0],   // F
+      [330, 1.0, 2.65],  // E
+
+      [262, 0.3, 3.8],   // C
+      [262, 0.3, 4.15],  // C
+      [294, 0.6, 4.5],   // D
+      [262, 0.6, 5.15],  // C
+      [392, 0.6, 5.8],   // G
+      [349, 1.0, 6.45],  // F
+
+      [262, 0.3, 7.6],   // C
+      [262, 0.3, 7.95],  // C
+      [523, 0.6, 8.3],   // C5
+      [440, 0.6, 8.95],  // A
+      [349, 0.6, 9.6],   // F
+      [330, 0.6, 10.25], // E
+      [294, 1.0, 10.9],  // D
+
+      [466, 0.3, 12.05], // Bb
+      [466, 0.3, 12.4],  // Bb
+      [440, 0.6, 12.75], // A
+      [349, 0.6, 13.4],  // F
+      [392, 0.6, 14.05], // G
+      [349, 1.2, 14.7],  // F
+    ];
+
+    function playMelody() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      birthdayNotes.forEach(([freq, dur, delay]) => {
+        const t = melodyTimeout.push(setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + dur);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(audioCtx.currentTime);
+          osc.stop(audioCtx.currentTime + dur + 0.05);
+        }, delay * 1000));
+      });
+
+      // 반복 재생
+      const totalDuration = 16000;
+      melodyTimeout.push(setTimeout(() => {
+        if (isPlaying) playMelody();
+      }, totalDuration));
+    }
+
+    function stopMelody() {
+      melodyTimeout.forEach(t => clearTimeout(t));
+      melodyTimeout = [];
+    }
+
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        musicBtn.textContent = '🔊';
+        musicBtn.classList.add('playing');
+        playMelody();
+      } else {
+        musicBtn.textContent = '🔇';
+        musicBtn.classList.remove('playing');
+        stopMelody();
+      }
+    });
+  </script>
+</body>
+</html>
